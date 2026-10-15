@@ -2,7 +2,9 @@
 
 - `index.html` — 메인 원페이지 (GitHub Pages가 이 파일을 서비스)
 - `contact.html`, `privacy.html` — 도입 문의 폼, 처리방침 자리표시
-- `css/`, `js/`, `assets/img/` — 스타일, 스크립트, 이미지(webp). 이미지를 바꾸려면 `assets/img/`의 같은 파일명으로 교체
+- `css/`, `js/`, `assets/img/` — 스타일, 스크립트, 사이트용 이미지(webp). 이미지를 바꾸려면 `assets/img/`의 같은 파일명으로 교체
+- `assets/source/` — 제공받은 원본 이미지(사이트가 직접 쓰지 않음)
+- `build_single.py` — `novacare-site.html` 재생성: `python3 build_single.py`
 - `novacare-site.html` — 위 파일을 하나로 합친 단일 HTML(이미지 포함, 더블클릭으로 열림)
 
 소스·빌드 스크립트: `hyossuny0077/homestation`의 `novacare-website/`

@@ -33,6 +33,20 @@
     else { paint(); window.addEventListener('scroll', paint, { passive: true }); window.addEventListener('resize', paint); }
   }
 
+  /* images ease from slightly smaller to full size as they scroll into view */
+  var grows = document.querySelectorAll('[data-grow]');
+  if (grows.length && !reduce) {
+    var grow = function () {
+      var vh = window.innerHeight;
+      grows.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var t = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.75)));
+        el.style.setProperty('--s', (0.9 + 0.1 * t).toFixed(3));
+      });
+    };
+    grow(); window.addEventListener('scroll', grow, { passive: true }); window.addEventListener('resize', grow);
+  }
+
   /* care loop: line fills as steps come into view */
   var steps = $('#steps');
   if (steps) {
