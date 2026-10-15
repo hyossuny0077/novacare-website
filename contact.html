@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>도입 문의 · NOVACARE</title>
+<meta name="description" content="노바케어 도입 상담, 데모 신청, 사업 제휴 문의를 남겨 주세요." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+<header class="hdr scrolled"><div class="wrap">
+  <a class="logo" href="index.html" aria-label="NOVACARE 홈으로"><i></i>NOVACARE</a>
+  <a class="btn btn-ghost btn-sm" href="index.html">홈으로</a>
+</div></header>
+
+<main id="main" class="page">
+  <div class="wrap form-grid">
+    <div>
+      <p class="eyebrow">CONTACT</p>
+      <h1>도입 문의</h1>
+      <p class="lead">귀사의 돌봄 환경과 운영 목적을 알려 주세요. 접수 후 담당자가 적용 가능한 범위와 일정을 협의합니다.</p>
+    </div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="type">문의 유형<span class="req">필수</span></label>
+        <select id="type" name="type" required>
+          <option value="">선택해 주세요</option>
+          <option value="public">공공사업 상담</option>
+          <option value="senior">솔루션 데모 신청 (시니어 주거·기업)</option>
+          <option value="partner">사업 제휴 문의</option>
+          <option value="reference">레퍼런스 요청</option>
+          <option value="ir">IR 문의</option>
+          <option value="etc">기타</option>
+        </select>
+        <p class="err" data-for="type"></p>
+      </div>
+      <div class="two">
+        <div class="field"><label for="org">기관명<span class="req">필수</span></label><input id="org" name="org" autocomplete="organization" required /><p class="err" data-for="org"></p></div>
+        <div class="field"><label for="name">담당자<span class="req">필수</span></label><input id="name" name="name" autocomplete="name" required /><p class="err" data-for="name"></p></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="email">이메일<span class="req">필수</span></label><input id="email" name="email" type="email" autocomplete="email" required /><p class="err" data-for="email"></p></div>
+        <div class="field"><label for="tel">전화</label><input id="tel" name="tel" type="tel" autocomplete="tel" inputmode="tel" placeholder="010-0000-0000" /><p class="err" data-for="tel"></p></div>
+      </div>
+      <div class="field">
+        <label for="msg">문의 내용<span class="req">필수</span></label>
+        <textarea id="msg" name="msg" required placeholder="도입 목적, 대상 규모, 희망 일정 등을 적어 주세요."></textarea>
+        <p class="err" data-for="msg"></p>
+      </div>
+      <div class="hp" aria-hidden="true"><label>비워 두세요<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+      <div class="field">
+        <label class="check"><input type="checkbox" id="agree" name="agree" required /><span>개인정보 수집·이용에 동의합니다. 문의 응대를 위해 기관명, 담당자, 이메일, 전화, 문의 내용을 수집합니다. (<a class="link" href="privacy.html" target="_blank" rel="noopener">자세히 보기</a>)</span></label>
+        <p class="err" data-for="agree"></p>
+      </div>
+      <button class="btn btn-primary" type="submit">문의 보내기</button>
+      <div id="result" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</main>
+
+<script>
+(function () {
+  var form = document.getElementById('form'), result = document.getElementById('result');
+  // 문의 접수 서버/CRM 주소. 비어 있으면 전송하지 않고 개발용 안내만 표시합니다.
+  var ENDPOINT = form.dataset.endpoint || '';
+  var q = new URLSearchParams(location.search).get('type');
+  if (q && form.type.querySelector('option[value="' + q + '"]')) form.type.value = q;
+
+  var rules = {
+    type: function (v) { return v ? '' : '문의 유형을 선택해 주세요.'; },
+    org: function (v) { return v.trim() ? '' : '기관명을 입력해 주세요.'; },
+    name: function (v) { return v.trim() ? '' : '담당자 이름을 입력해 주세요.'; },
+    email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? '' : '답변받을 이메일 주소를 정확히 입력해 주세요.'; },
+    tel: function (v) { return !v.trim() || /^[0-9+\-\s()]{8,20}$/.test(v.trim()) ? '' : '전화번호는 숫자와 하이픈만 입력해 주세요.'; },
+    msg: function (v) { return v.trim().length >= 10 ? '' : '문의 내용을 10자 이상 적어 주세요.'; },
+    agree: function (v, el) { return el.checked ? '' : '개인정보 수집·이용에 동의해 주세요.'; }
+  };
+  function check(name) {
+    var el = form.elements[name], msg = rules[name](el.value || '', el);
+    form.querySelector('.err[data-for="' + name + '"]').textContent = msg;
+    el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    return !msg;
+  }
+  Object.keys(rules).forEach(function (n) { form.elements[n].addEventListener('blur', function () { check(n); }); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var bad = Object.keys(rules).filter(function (n) { return !check(n); });
+    if (bad.length) { form.elements[bad[0]].focus(); result.innerHTML = ''; return; }
+    if (form.elements.website.value) return; // 스팸 방지용 숨은 필드
+    if (!ENDPOINT) {
+      result.innerHTML = '<p class="notice dev">개발용 안내: 문의 접수 서버가 아직 연결되지 않아 전송되지 않았습니다. 연결 후 이 안내는 사라집니다.</p>';
+      return;
+    }
+    var data = {}; new FormData(form).forEach(function (v, k) { if (k !== 'website') data[k] = v; });
+    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); result.innerHTML = '<p class="notice ok">문의가 접수되었습니다. 담당자가 확인 후 입력하신 이메일로 연락드립니다.</p>'; })
+      .catch(function () { result.innerHTML = '<p class="notice dev">전송하지 못했습니다. 잠시 후 다시 시도해 주세요. 계속되면 입력하신 내용을 저장해 두고 담당자에게 알려 주세요.</p>'; });
+  });
+})();
+</script>
+</body>
+</html>
